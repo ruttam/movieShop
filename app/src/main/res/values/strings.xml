@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Movie Shop</string>
+    <string name="movie_poster">Movie poster</string>
+    <string name="movie_rating">Movie rating</string>
+    <string name="release_date">Release date</string>
+    <string name="most_popular">Most popular</string>
+    <string name="highest_rated">Highest-rated</string>
+    <string name="error_message">Oops. Something went wrong. Check your internet connection and try again.</string>
+</resources>
