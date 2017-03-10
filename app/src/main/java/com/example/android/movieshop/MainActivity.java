@@ -4,27 +4,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.android.movieshop.utilities.AsyncTaskListener;
 import com.example.android.movieshop.utilities.Movie;
-import com.example.android.movieshop.utilities.NetworkUtils;
+import com.example.android.movieshop.utilities.MovieDBQueryTask;
 import com.example.android.movieshop.utilities.PosterAdapter;
 import com.example.android.movieshop.utilities.Sort;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements PosterAdapter.PosterClickListener {
@@ -49,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview_posters);
         recyclerView.setHasFixedSize(true);
 
-        LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        GridLayoutManager manager = new GridLayoutManager(this, numberOfColumns());
         recyclerView.setLayoutManager(manager);
 
         adapter = new PosterAdapter(this);
@@ -59,6 +55,16 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         makeMovieDBSearchQuery(sortBy);
+    }
+
+    private int numberOfColumns() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int widthDivider = 300;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 
     @Override
@@ -83,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
     private void makeMovieDBSearchQuery(Sort s) {
         if(isOnline()) {
             showPosterDataView();
-            new MovieDBQueryTask().execute(s);
+            new MovieDBQueryTask(this, new MovieDBQueryTaskListener()).execute(s);
         } else {
             showErrorMessage();
         }
@@ -108,51 +114,10 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         startActivity(intent);
     }
 
-    private class MovieDBQueryTask extends AsyncTask<Sort, Void, ArrayList<Movie>> {
+    public class MovieDBQueryTaskListener implements AsyncTaskListener<ArrayList<Movie>> {
 
         @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressBar.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected ArrayList<Movie> doInBackground(Sort... sort) {
-            if (sort.length != 0) {
-                sortBy = sort[0];
-            }
-            String movieDBRequestResults;
-            try {
-                movieDBRequestResults = NetworkUtils.getResponseFromHttpUrl(NetworkUtils.buildUrl(sortBy));
-                return jsonObjectToArray(movieDBRequestResults);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        private ArrayList<Movie> jsonObjectToArray(String s) {
-            ArrayList<Movie> m = new ArrayList<>();
-            try {
-                JSONObject object = new JSONObject(s);
-                JSONArray arrayOfMovies = object.getJSONArray("results");
-                for (int i = 0; i < arrayOfMovies.length(); i++) {
-                    JSONObject o = arrayOfMovies.getJSONObject(i);
-                    m.add(new Movie(o.getString("poster_path"),
-                            o.getString("original_title"),
-                            o.getString("overview"),
-                            o.getString("vote_average"),
-                            o.getString("release_date")));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return m;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movie> movies) {
-            super.onPostExecute(movies);
+        public void onTaskComplete(ArrayList<Movie> movies) {
             mProgressBar.setVisibility(View.INVISIBLE);
             if (!movies.isEmpty()) {
                 showPosterDataView();
@@ -163,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements PosterAdapter.Pos
         }
     }
 
-    public boolean isOnline() {
+    private boolean isOnline() {
         ConnectivityManager cm =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();

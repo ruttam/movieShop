@@ -10,28 +10,27 @@ import com.example.android.movieshop.utilities.Movie;
 import com.example.android.movieshop.utilities.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 import static com.example.android.movieshop.MainActivity.NAME_OF_EXTRA;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    Movie movie = null;
+    private Movie movie = null;
 
-    ImageView moviePoster;
-    TextView movieTitle;
-    TextView movieRating;
-    TextView movieReleaseDate;
-    TextView movieOverview;
+    private @BindView(R.id.poster_thumbnail) ImageView moviePoster;
+    private @BindView(R.id.movie_title) TextView movieTitle;
+    private @BindView(R.id.movie_rate) TextView movieRating;
+    private @BindView(R.id.movie_releasedate) TextView movieReleaseDate;
+    private @BindView(R.id.movie_overview) TextView movieOverview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        moviePoster = (ImageView) findViewById(R.id.poster_thumbnail);
-        movieTitle = (TextView) findViewById(R.id.movie_title);
-        movieRating = (TextView) findViewById(R.id.movie_rate);
-        movieReleaseDate = (TextView) findViewById(R.id.movie_releasedate);
-        movieOverview = (TextView) findViewById(R.id.movie_overview);
+        ButterKnife.bind(this);
 
         Intent parentIntent = getIntent();
 

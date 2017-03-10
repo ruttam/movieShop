@@ -10,7 +10,7 @@ public class Movie implements Parcelable {
     private String voteAverage;
     private String releaseDate;
 
-    public Movie(String url, String t, String o, String v, String r) {
+    Movie(String url, String t, String o, String v, String r) {
         thumbnailURL = url;
         title = t;
         overview = o;

@@ -2,6 +2,8 @@ package com.example.android.movieshop.utilities;
 
 import android.net.Uri;
 
+import com.example.android.movieshop.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,9 +21,9 @@ public class NetworkUtils {
     private static String sortBy = "";
 
     private final static String PARAM_API = "api_key";
-    private final static String api = "";
+    private final static String api = BuildConfig.API_KEY;
 
-    public static URL buildUrl(Sort sortParam) {
+    static URL buildUrl(Sort sortParam) {
         setSortParams(sortParam);
         Uri builtUri = Uri.parse(MOVIEDB_BASE_URL).buildUpon()
                 .appendEncodedPath(sortBy)
@@ -49,7 +51,7 @@ public class NetworkUtils {
         }
     }
 
-    public static String getResponseFromHttpUrl(URL url) throws IOException {
+    static String getResponseFromHttpUrl(URL url) throws IOException {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();
