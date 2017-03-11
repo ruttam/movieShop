@@ -19,11 +19,11 @@ public class DetailsActivity extends AppCompatActivity {
 
     private Movie movie = null;
 
-    private @BindView(R.id.poster_thumbnail) ImageView moviePoster;
-    private @BindView(R.id.movie_title) TextView movieTitle;
-    private @BindView(R.id.movie_rate) TextView movieRating;
-    private @BindView(R.id.movie_releasedate) TextView movieReleaseDate;
-    private @BindView(R.id.movie_overview) TextView movieOverview;
+    @BindView(R.id.poster_thumbnail) ImageView moviePoster;
+    @BindView(R.id.movie_title) TextView movieTitle;
+    @BindView(R.id.movie_rate) TextView movieRating;
+    @BindView(R.id.movie_releasedate) TextView movieReleaseDate;
+    @BindView(R.id.movie_overview) TextView movieOverview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
